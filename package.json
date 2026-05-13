@@ -1,0 +1,20 @@
+{
+  "name": "taskmanager",
+  "version": "1.0.0",
+  "description": "Task Manager",
+  "homepage": "https://github.com/beginner-web-developer/TaskManager#readme",
+  "bugs": {
+    "url": "https://github.com/beginner-web-developer/TaskManager/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/beginner-web-developer/TaskManager.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
