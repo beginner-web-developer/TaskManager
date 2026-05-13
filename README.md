@@ -1,0 +1,1 @@
+This project serves to create a Task Manager application to facilitate management of complex schedules.
