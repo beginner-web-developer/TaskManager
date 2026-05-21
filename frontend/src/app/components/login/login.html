@@ -1,0 +1,17 @@
+<h1>Login to TaskManager</h1>
+<br>
+
+<form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+    <label for="username">Username:</label>
+    <input type="text" name="username" formControlName="username"/>
+
+    <label for="password">Password:</label>
+    <input type="password" name="password" formControlName="password"/>
+
+    <button type="submit" [disabled]="loginForm.invalid">Log In</button>
+</form>
+
+<div *ngIf="message">{{ message }}</div>
+
+<p>Don't have an account?</p>
+<button routerLink="/register">Sign Up</button>
