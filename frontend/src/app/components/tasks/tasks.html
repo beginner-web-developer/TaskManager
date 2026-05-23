@@ -1,0 +1,35 @@
+<h1>Welcome {{ username }}</h1>
+<br>
+
+<h2>Current Tasks:</h2>
+<ul *ngIf="taskList.length !== 0">
+    <li *ngFor="let task of taskList">
+        Title: {{ task.title }}, Description: {{ task.description }},
+        Start: {{ task.startDate | date:'yyyy-MM-dd HH:mm' }}, End: {{ task.endDate | date:'yyyy-MM-dd HH:mm' }}
+        <button (click)="onClick(task)">Update Task</button>
+        <button (click)="onDelete(task._id || '')">Delete Task</button>
+    </li>
+</ul>
+<p *ngIf="taskList.length == 0">No tasks yet!</p>
+<br>
+
+<p *ngIf="message">{{ message }}</p>
+<br>
+
+<h2>Add new task:</h2>
+<form [formGroup]="taskForm" (ngSubmit)="onSubmit()">
+    <label for="title">Title:</label>
+    <input type="text" name="title" formControlName="title"/>
+
+    <label for="description">Description:</label>
+    <input type="text" name="description" formControlName="description"/>
+
+    <label for="startDate">Start Date:</label>
+    <input type="datetime-local" name="startDate" formControlName="startDate"/>
+
+    <label for="endDate">End Date:</label>
+    <input type="datetime-local" name="endDate" formControlName="endDate"/>
+
+    <button type="submit" [disabled]="taskForm.invalid">{{ isEditing? "Update Task" : "Add Task" }}</button>
+</form>
+

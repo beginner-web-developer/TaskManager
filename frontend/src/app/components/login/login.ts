@@ -14,7 +14,6 @@ import { User } from '../../interfaces/user';
 export class Login {
   loginForm: FormGroup;
   message?: string;
-  user?: User;
   constructor(private formBuilder: FormBuilder, private service: AuthService, private router: Router, private cdr: ChangeDetectorRef) {
     this.loginForm = this.formBuilder.group({
       username: ['', Validators.required],
@@ -26,7 +25,7 @@ export class Login {
     const data: User = this.loginForm.value;
     this.service.login(data).subscribe({
       next: (response) => {
-        this.user = response.data;
+        this.service.userId.next(response.data);
         this.router.navigate(["/tasks"]);
         this.loginForm.reset();
       },

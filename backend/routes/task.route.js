@@ -3,8 +3,8 @@ import { createTask, deleteTask, readTasks, updateTask } from "../controllers/ta
 
 const taskRouter = Router();
 
-taskRouter.route("/createTask").post(createTask);
-taskRouter.route("/readTasks").get(readTasks);
+taskRouter.route("/createTask/:userId").post(createTask);
+taskRouter.route("/readTasks/:userId").get(readTasks);
 taskRouter.route("/updateTask/:taskId").patch(updateTask);
 taskRouter.route("/deleteTask/:taskId").delete(deleteTask);
 

@@ -19,12 +19,10 @@ const taskSchema = new Schema(
         startDate: {
             type: Date,
             required: true,
-            trim: true
         },
         endDate: {
             type: Date,
-            required: true,
-            trim: true
+            required: true
         },
         isCompleted: {
             type: Boolean,
