@@ -1,20 +1,61 @@
-<h1>Sign Up for TaskManager</h1>
-<br>
+<div class="signup-container">
+  <div class="signup-card">
+    <h1>Create Account</h1>
+    <p class="subtitle">Sign up for TaskManager to organize your tasks.</p>
 
-<form [formGroup]="signUpForm" (ngSubmit)="onSubmit()">
-    <label for="email">Email:</label>
-    <input type="email" name="email" formControlName="email"/>
+    <form [formGroup]="signUpForm" (ngSubmit)="onSubmit()">
+      
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input 
+          type="email" 
+          id="email"
+          name="email" 
+          formControlName="email"
+          placeholder="Enter your email"
+        />
+      </div>
 
-    <label for="username">Username:</label>
-    <input type="text" name="username" formControlName="username"/>
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input 
+          type="text" 
+          id="username"
+          name="username" 
+          formControlName="username"
+          placeholder="Choose a username"
+        />
+      </div>
 
-    <label for="password">Password:</label>
-    <input type="password" name="password" formControlName="password"/>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input 
+          type="password" 
+          id="password"
+          name="password" 
+          formControlName="password"
+          placeholder="Create a password"
+        />
+      </div>
 
-    <button type="submit" [disabled]="signUpForm.invalid">Register</button>
+      <button 
+        class="signup-btn"
+        type="submit" 
+        [disabled]="signUpForm.invalid"
+      >
+        Register
+      </button>
 
-    <p *ngIf="message">{{ message }}</p>
-</form>
+      <p class="message" *ngIf="message">
+        {{ message }}
+      </p>
+    </form>
 
-<p>Already have an account?</p>
-<button routerLink="/login">Log in</button>
+    <div class="login-section">
+      <p>Already have an account?</p>
+      <button class="login-btn" routerLink="/login">
+        Log in
+      </button>
+    </div>
+  </div>
+</div>

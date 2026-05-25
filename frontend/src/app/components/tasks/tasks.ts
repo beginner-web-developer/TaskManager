@@ -73,8 +73,8 @@ export class Tasks implements OnInit {
     this.taskForm.patchValue({
       title: task.title,
       description: task.description,
-      startDate: task.startDate.slice(0, 16),
-      endDate: task.endDate.slice(0, 16)
+      startDate: this.formatDate(task.startDate),
+      endDate: this.formatDate(task.endDate)
     });
   }
 
@@ -88,6 +88,7 @@ export class Tasks implements OnInit {
         this.message = response.message;
         this.cdr.detectChanges();
         this.taskForm.reset();
+        this.isEditing = false;
         this.loadTasks();
       },
       error: (err) => {
@@ -110,4 +111,14 @@ export class Tasks implements OnInit {
       }
     });
   }
+
+  formatDate(dateString: string): string {
+    const date = new Date(dateString);
+
+    return new Date(
+      date.getTime() - date.getTimezoneOffset() * 60000
+    )
+      .toISOString()
+      .slice(0, 16);
+  };
 }

@@ -1,35 +1,104 @@
 <h1>Welcome {{ username }}</h1>
 <br>
 
-<h2>Current Tasks:</h2>
-<ul *ngIf="taskList.length !== 0">
-    <li *ngFor="let task of taskList">
-        Title: {{ task.title }}, Description: {{ task.description }},
-        Start: {{ task.startDate | date:'yyyy-MM-dd HH:mm' }}, End: {{ task.endDate | date:'yyyy-MM-dd HH:mm' }}
-        <button (click)="onClick(task)">Update Task</button>
-        <button (click)="onDelete(task._id || '')">Delete Task</button>
-    </li>
-</ul>
-<p *ngIf="taskList.length == 0">No tasks yet!</p>
-<br>
+<div class="container">
 
-<p *ngIf="message">{{ message }}</p>
-<br>
+  <!-- LEFT SIDE -->
+  <div class="task-table">
+    <h2>Current Tasks:</h2>
+    <p *ngIf="taskList.length == 0">No tasks currently.</p>
+    <table *ngIf="taskList.length !== 0">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Start</th>
+          <th>End</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
 
-<h2>Add new task:</h2>
-<form [formGroup]="taskForm" (ngSubmit)="onSubmit()">
-    <label for="title">Title:</label>
-    <input type="text" name="title" formControlName="title"/>
+      <tbody>
+        @for (task of taskList; track task._id) {
+          <tr>
+            <td class="title-cell">
+              {{ task.title }}
 
-    <label for="description">Description:</label>
-    <input type="text" name="description" formControlName="description"/>
+              <div class="tooltip">
+                Description: {{ task.description }}
+              </div>
+            </td>
 
-    <label for="startDate">Start Date:</label>
-    <input type="datetime-local" name="startDate" formControlName="startDate"/>
+            <td>
+              {{ task.startDate | date:'yyyy-MM-dd HH:mm' }}
+            </td>
 
-    <label for="endDate">End Date:</label>
-    <input type="datetime-local" name="endDate" formControlName="endDate"/>
+            <td>
+              {{ task.endDate | date:'yyyy-MM-dd HH:mm' }}
+            </td>
 
-    <button type="submit" [disabled]="taskForm.invalid">{{ isEditing? "Update Task" : "Add Task" }}</button>
-</form>
+            <td>
+              {{ task.isCompleted ? 'Done' : 'Pending' }}
+            </td>
 
+            <td>
+              <button (click)="onClick(task)">
+                Update
+              </button>
+
+              <button (click)="onDelete(task._id || '')">
+                Delete
+              </button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+
+  </div>
+
+  <!-- RIGHT SIDE -->
+  <div class="task-form">
+
+    <p>{{ message }}</p>
+
+    <h2>
+      {{ isEditing ? 'Update Task' : 'Create Task' }}
+    </h2>
+
+    <form [formGroup]="taskForm" (ngSubmit)="onSubmit()">
+
+      <input
+        type="text"
+        placeholder="Title"
+        formControlName="title"
+      />
+
+      <textarea
+        placeholder="Description"
+        formControlName="description"
+      ></textarea>
+
+      <label>Start Date</label>
+
+      <input
+        type="datetime-local"
+        formControlName="startDate"
+      />
+
+      <label>End Date</label>
+
+      <input
+        type="datetime-local"
+        formControlName="endDate"
+      />
+
+      <button type="submit">
+        {{ isEditing ? 'Update' : 'Create' }}
+      </button>
+
+    </form>
+
+  </div>
+
+</div>

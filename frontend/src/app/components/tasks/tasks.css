@@ -1,0 +1,89 @@
+.container {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  padding: 20px;
+}
+
+/* LEFT */
+.task-table {
+  flex: 2;
+}
+
+/* RIGHT */
+.task-form {
+  flex: 1;
+  border: 1px solid #ccc;
+  padding: 20px;
+  border-radius: 8px;
+  background-color: #fafafa;
+}
+
+/* TABLE */
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  border: 1px solid #ddd;
+  padding: 12px;
+}
+
+th {
+  background-color: #f3f3f3;
+}
+
+/* FORM */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+input,
+textarea,
+button {
+  padding: 10px;
+}
+
+textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+h1 {
+    text-align: center;
+}
+
+.title-cell {
+  position: relative;
+  font-weight: 600;
+  color: #4f46e5;
+  cursor: pointer;
+}
+
+.tooltip {
+  position: absolute;
+  top: 110%;
+  left: 0;
+  background: #222;
+  color: white;
+  padding: 10px 12px;
+  border-radius: 10px;
+  min-width: 220px;
+  max-width: 320px;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  opacity: 0;
+  visibility: hidden;
+  transition: 0.2s ease;
+  z-index: 100;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.title-cell:hover .tooltip {
+  opacity: 1;
+  visibility: visible;
+}
