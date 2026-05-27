@@ -1,17 +1,35 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { TaskService } from '../../services/task-service';
 import { AuthService } from '../../services/authService';
 import { Task } from '../../interfaces/task';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
+import { MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatSortModule } from '@angular/material/sort';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-tasks',
-  imports: [ReactiveFormsModule, CommonModule],
+  imports: [
+    ReactiveFormsModule, 
+    CommonModule,
+    MatTableModule,
+    MatPaginatorModule,
+    MatSortModule,
+    MatInputModule,
+    MatFormFieldModule,
+    MatTooltipModule
+  ],
   templateUrl: './tasks.html',
   styleUrl: './tasks.css',
 })
-export class Tasks implements OnInit {
+export class Tasks implements OnInit, AfterViewInit {
   taskList: Task[] = [];
   message?: string;
   taskForm: FormGroup;
@@ -20,6 +38,18 @@ export class Tasks implements OnInit {
   isEditing: boolean = false;
   selectedTaskId?: string;
 
+  // table properties
+  displayedColumns: string[] = [
+    'title',
+    'startDate',
+    'endDate',
+    'isCompleted',
+    'actions'
+  ];
+  tableData: MatTableDataSource<Task>;
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
+
   constructor(private formBuilder: FormBuilder, private service: TaskService, private auth: AuthService, private cdr: ChangeDetectorRef) {
     this.taskForm = this.formBuilder.group({
       title: ['', Validators.required],
@@ -27,6 +57,12 @@ export class Tasks implements OnInit {
       startDate: ['', Validators.required],
       endDate: ['', Validators.required]
     })
+    this.tableData = new MatTableDataSource(this.taskList);
+    this.tableData.filterPredicate = (task: Task, filter: string) => {
+      const searchText = `${task.title}`.toLowerCase();
+
+      return searchText.includes(filter);
+    };
   }
 
   ngOnInit(): void {
@@ -35,10 +71,22 @@ export class Tasks implements OnInit {
       this.loadTasks();
   }
 
+  ngAfterViewInit() {
+    this.tableData.paginator = this.paginator;
+    this.tableData.sort = this.sort;
+  }
+
+  applyFilter(filterValue: string) {
+    this.tableData.filter = filterValue.trim().toLowerCase();
+  }
+
   loadTasks(): void {
     this.service.getTasks(this.userId || '').subscribe({
         next: (response) => {
           this.taskList = response.tasks;
+          this.tableData.data = this.taskList;
+          this.tableData.paginator = this.paginator;
+          this.tableData.sort = this.sort;
           this.cdr.detectChanges();
         },
         error: (err) => {
@@ -126,7 +174,7 @@ export class Tasks implements OnInit {
     this.service.markTask(taskId, isMark).subscribe({
       next: (response) => {
         this.message = response.message;
-        this.taskList = this.taskList.map(task => task._id == taskId ? {...task, isCompleted: isMark} : task);
+        this.loadTasks();
         this.cdr.detectChanges();
       },
       error: (err) => {

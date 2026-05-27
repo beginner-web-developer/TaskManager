@@ -7,62 +7,80 @@
   <div class="task-table">
     <h2>Current Tasks:</h2>
     <p *ngIf="taskList.length == 0">No tasks currently.</p>
-    <table *ngIf="taskList.length !== 0">
-      <thead>
-        <tr>
-          <th>Title</th>
-          <th>Start</th>
-          <th>End</th>
-          <th>Status</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
+    <input
+      matInput
+      placeholder="Search tasks by title"
+      (keyup)="applyFilter($any($event.target).value)"
+    >
+    <table mat-table [dataSource]="tableData" matSort>
+      
+      <ng-container matColumnDef="title">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          Title
+        </th>
+        <td mat-cell 
+          *matCellDef="let task" 
+          [matTooltip]="task.description"
+          matTooltipPosition="above"
+          matTooltipClass="task-tooltip"
+        >
+          {{ task.title }}
+        </td>
+      </ng-container>
 
-      <tbody>
-        @for (task of taskList; track task._id) {
-          <tr>
-            <td class="title-cell">
-              {{ task.title }}
+      <ng-container matColumnDef="startDate">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          Start
+        </th>
+        <td mat-cell *matCellDef="let task">
+          {{ task.startDate | date:'yyyy-MM-dd HH:mm' }}
+        </td>
+      </ng-container>
 
-              <div class="tooltip">
-                Description: {{ task.description }}
-              </div>
-            </td>
+      <ng-container matColumnDef="endDate">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          End
+        </th>
+        <td mat-cell *matCellDef="let task">
+          {{ task.endDate | date:'yyyy-MM-dd HH:mm' }}
+        </td>
+      </ng-container>
 
-            <td>
-              {{ task.startDate | date:'yyyy-MM-dd HH:mm' }}
-            </td>
+      <ng-container matColumnDef="isCompleted">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          Status
+        </th>
+        <td mat-cell *matCellDef="let task">
+          {{ task.isCompleted ? 'Done' : 'Pending' }}
+        </td>
+      </ng-container>
 
-            <td>
-              {{ task.endDate | date:'yyyy-MM-dd HH:mm' }}
-            </td>
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>
+          Actions
+        </th>
+        <td mat-cell *matCellDef="let task">
+          <button (click)="onClick(task)">Update</button>
+          <button (click)="onDelete(task._id || '')">Delete</button>
+          <button (click)="onMark(task._id || '', true)" *ngIf="!task.isCompleted">
+            Mark
+          </button>
+          <button (click)="onMark(task._id || '', false)" *ngIf="task.isCompleted">
+            Unmark
+          </button>
+        </td>
+      </ng-container>
 
-            <td>
-              {{ task.isCompleted ? 'Done' : 'Pending' }}
-            </td>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
 
-            <td>
-              <button (click)="onClick(task)">
-                Update
-              </button>
-
-              <button (click)="onDelete(task._id || '')">
-                Delete
-              </button>
-
-              <button (click)="onMark(task._id || '', true)" *ngIf="!task.isCompleted">
-                Mark
-              </button>
-
-              <button (click)="onMark(task._id || '', false)" *ngIf="task.isCompleted">
-                Unmark
-              </button>
-            </td>
-          </tr>
-        }
-      </tbody>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
 
+    <mat-paginator
+      [pageSize]="5"
+      [pageSizeOptions]="[5, 10, 20]"
+      showFirstLastButtons>
+    </mat-paginator>
   </div>
 
   <!-- RIGHT SIDE -->

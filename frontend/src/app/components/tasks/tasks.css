@@ -57,33 +57,17 @@ h1 {
     text-align: center;
 }
 
-.title-cell {
-  position: relative;
-  font-weight: 600;
-  color: #4f46e5;
-  cursor: pointer;
-}
+::ng-deep .task-tooltip {
+  background-color: #1e293b !important;
+  color: white !important;
 
-.tooltip {
-  position: absolute;
-  top: 110%;
-  left: 0;
-  background: #222;
-  color: white;
-  padding: 10px 12px;
-  border-radius: 10px;
-  min-width: 220px;
-  max-width: 320px;
-  font-size: 0.9rem;
-  line-height: 1.4;
-  opacity: 0;
-  visibility: hidden;
-  transition: 0.2s ease;
-  z-index: 100;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-}
+  border: 2px solid #475569;
+  border-radius: 8px;
 
-.title-cell:hover .tooltip {
-  opacity: 1;
-  visibility: visible;
+  padding: 12px !important;
+
+  font-size: 14px;
+  max-width: 250px;
+
+  white-space: pre-line;
 }
