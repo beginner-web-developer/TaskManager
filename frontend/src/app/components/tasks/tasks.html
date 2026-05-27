@@ -49,6 +49,14 @@
               <button (click)="onDelete(task._id || '')">
                 Delete
               </button>
+
+              <button (click)="onMark(task._id || '', true)" *ngIf="!task.isCompleted">
+                Mark
+              </button>
+
+              <button (click)="onMark(task._id || '', false)" *ngIf="task.isCompleted">
+                Unmark
+              </button>
             </td>
           </tr>
         }

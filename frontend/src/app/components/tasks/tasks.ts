@@ -121,4 +121,18 @@ export class Tasks implements OnInit {
       .toISOString()
       .slice(0, 16);
   };
+
+  onMark(taskId: string, isMark: boolean): void {
+    this.service.markTask(taskId, isMark).subscribe({
+      next: (response) => {
+        this.message = response.message;
+        this.taskList = this.taskList.map(task => task._id == taskId ? {...task, isCompleted: isMark} : task);
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        this.message = err.error.message;
+        this.cdr.detectChanges();
+      }
+    });
+  }
 }

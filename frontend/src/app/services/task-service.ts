@@ -26,4 +26,10 @@ export class TaskService {
   updateTask(task: Task, taskId: string): Observable<TaskResponse> {
     return this.httpClient.patch<TaskResponse>(`${this.apiUrl}/updateTask/${taskId}`, task);
   }
+
+  markTask(taskId: string, isCompleted: boolean): Observable<TaskResponse> {
+    return this.httpClient.patch<TaskResponse>(`${this.apiUrl}/markTask/${taskId}`, {
+      isCompleted: isCompleted
+    });
+  }
 }

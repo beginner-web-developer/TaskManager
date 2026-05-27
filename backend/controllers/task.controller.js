@@ -1,4 +1,4 @@
-import { CREATE_ERROR_MSG, SERVER_ERROR_MSG, TASK_CREATE_SUCCESS_MSG, TASK_DELETE_SUCCESS_MSG, TASK_NOT_FOUND_ERROR_MSG, TASK_READ_SUCCESS_MSG, TASK_TIMING_CONFLICTS_ERROR_MSG, TASK_UPDATE_SUCCESS_MSG } from "../config/constants.js";
+import { CREATE_ERROR_MSG, SERVER_ERROR_MSG, TASK_CREATE_SUCCESS_MSG, TASK_DELETE_SUCCESS_MSG, TASK_MARK_SUCCESS_MSG, TASK_NOT_FOUND_ERROR_MSG, TASK_READ_SUCCESS_MSG, TASK_STATUS_UNCHANGED_ERROR_MSG, TASK_TIMING_CONFLICTS_ERROR_MSG, TASK_UPDATE_SUCCESS_MSG } from "../config/constants.js";
 import { Task } from "../models/task.model.js";
 
 const createTask = async (req, res) => {
@@ -76,7 +76,7 @@ const updateTask = async (req, res) => {
     }
 };
 
-const deleteTask = async(req, res) => {
+const deleteTask = async (req, res) => {
     try {
         const { taskId } = req.params;
         const task = await Task.findByIdAndDelete(taskId);
@@ -92,4 +92,24 @@ const deleteTask = async(req, res) => {
     }
 };
 
-export { createTask, readTasks, updateTask, deleteTask };
+const markTask = async (req, res) => {
+    try {
+        const { taskId } = req.params;
+        const { isCompleted } = req.body;
+        const task = await Task.findById(taskId);
+        if (!task) {
+            return res.status(404).json({ message: TASK_NOT_FOUND_ERROR_MSG });
+        }
+        if (task.isCompleted == isCompleted) {
+            return res.status(400).json({ message: TASK_STATUS_UNCHANGED_ERROR_MSG });
+        }
+        const updated = await Task.findByIdAndUpdate(taskId, { isCompleted: isCompleted }, {
+            returnDocument: "after"
+        });
+        res.status(200).json({ message: TASK_MARK_SUCCESS_MSG, data: updated });
+    } catch (error) {
+        res.status(500).json({ message: SERVER_ERROR_MSG });
+    }
+}
+
+export { createTask, readTasks, updateTask, deleteTask, markTask };
