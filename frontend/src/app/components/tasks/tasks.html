@@ -10,8 +10,12 @@
     <input
       matInput
       placeholder="Search tasks by title"
-      (keyup)="applyFilter($any($event.target).value)"
+      (keyup)="searchValue = $any($event.target).value; applyFilter()"
     >
+    <mat-checkbox [formControl]="filterCompleted" (change)="applyFilter()" aria-checked="true">
+      Show / Hide completed
+    </mat-checkbox>
+
     <table mat-table [dataSource]="tableData" matSort>
       
       <ng-container matColumnDef="title">

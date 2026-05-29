@@ -4,7 +4,7 @@ export interface Task {
     description: string;
     startDate: string;
     endDate: string;
-    isCompleted?: boolean;
+    isCompleted: boolean;
 }
 
 export interface TaskResponse {

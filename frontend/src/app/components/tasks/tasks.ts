@@ -2,7 +2,7 @@ import { AfterViewInit, ChangeDetectorRef, Component, OnInit, ViewChild } from '
 import { TaskService } from '../../services/task-service';
 import { AuthService } from '../../services/authService';
 import { Task } from '../../interfaces/task';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -13,6 +13,7 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 @Component({
   selector: 'app-tasks',
@@ -24,7 +25,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatSortModule,
     MatInputModule,
     MatFormFieldModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatCheckboxModule
   ],
   templateUrl: './tasks.html',
   styleUrl: './tasks.css',
@@ -37,6 +39,8 @@ export class Tasks implements OnInit, AfterViewInit {
   username?: string;
   isEditing: boolean = false;
   selectedTaskId?: string;
+  filterCompleted = new FormControl(true); // true = show completed, false = hide completed
+  searchValue: string = '';
 
   // table properties
   displayedColumns: string[] = [
@@ -59,9 +63,10 @@ export class Tasks implements OnInit, AfterViewInit {
     })
     this.tableData = new MatTableDataSource(this.taskList);
     this.tableData.filterPredicate = (task: Task, filter: string) => {
-      const searchText = `${task.title}`.toLowerCase();
-
-      return searchText.includes(filter);
+      const parsed = JSON.parse(filter);
+      const matchSearch = task.title.toLowerCase().includes(parsed.search);
+      const matchCompleted = parsed.completed || !task.isCompleted;
+      return matchSearch && matchCompleted;
     };
   }
 
@@ -76,8 +81,15 @@ export class Tasks implements OnInit, AfterViewInit {
     this.tableData.sort = this.sort;
   }
 
-  applyFilter(filterValue: string) {
-    this.tableData.filter = filterValue.trim().toLowerCase();
+  applyFilter(): void {
+    const filterObj = {
+      search: this.searchValue.trim().toLowerCase(),
+      completed: this.filterCompleted.value
+    };
+    this.tableData.filter = JSON.stringify(filterObj);
+    if (this.tableData.paginator) {
+      this.tableData.paginator.firstPage();
+    }
   }
 
   loadTasks(): void {
