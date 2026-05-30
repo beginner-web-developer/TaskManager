@@ -59,7 +59,11 @@ export class Tasks implements OnInit, AfterViewInit {
       title: ['', Validators.required],
       description: ['', Validators.required],
       startDate: ['', Validators.required],
-      endDate: ['', Validators.required]
+      endDate: ['', Validators.required],
+
+      enableRecurrence: [false],
+      repeat: [{ value: 'weekly', disabled: true }],
+      repeatCount: [{ value: 1, disabled: true }]
     })
     this.tableData = new MatTableDataSource(this.taskList);
     this.tableData.filterPredicate = (task: Task, filter: string) => {
@@ -74,6 +78,17 @@ export class Tasks implements OnInit, AfterViewInit {
       this.userId = this.auth.userId.value.id;
       this.username = this.auth.userId.value.username;
       this.loadTasks();
+      this.taskForm.get('enableRecurrence')?.valueChanges.subscribe(enabled => {
+        if (enabled) {
+          this.taskForm.get('repeat')?.enable();
+          this.taskForm.get('repeat')?.setValue('weekly');
+          this.taskForm.get('repeatCount')?.enable();
+          this.taskForm.get('repeatCount')?.setValue(1);
+        } else {
+          this.taskForm.get('repeat')?.disable();
+          this.taskForm.get('repeatCount')?.disable();
+        }
+      });
   }
 
   ngAfterViewInit() {
@@ -113,15 +128,19 @@ export class Tasks implements OnInit, AfterViewInit {
       return this.onUpdate(this.selectedTaskId || '');
     }
     const taskData: Task = this.taskForm.value;
+    console.log(taskData);
     this.service.createTask(taskData, this.userId || '').subscribe({
       next: (response) => {
         this.message = response.message;
+        console.log(this.message);
+        console.log(response.data);
         this.cdr.detectChanges();
         this.taskForm.reset();
         this.loadTasks();
       },
       error: (err) => {
         this.message = err.error.message;
+        console.log(this.message);
         this.cdr.detectChanges();
       }
     });

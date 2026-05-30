@@ -5,6 +5,8 @@ export interface Task {
     startDate: string;
     endDate: string;
     isCompleted: boolean;
+    repeat?: string;
+    repeatCount?: number;
 }
 
 export interface TaskResponse {

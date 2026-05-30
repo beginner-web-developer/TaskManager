@@ -3,29 +3,66 @@ import { Task } from "../models/task.model.js";
 
 const createTask = async (req, res) => {
     try {
-        const { title, description, startDate, endDate } = req.body;
+        const { title, description, startDate, endDate, 
+            enableRecurrence, repeat, repeatCount } = req.body;
         const { userId } = req.params;
         if (!title || !description || !startDate || !endDate) {
             return res.status(400).json({ message: CREATE_ERROR_MSG })
         }
 
-        const tasks = await Task.find({ 
-            userId, 
-            startDate: {$lt: endDate}, 
-            endDate: {$gt: startDate},
-            isCompleted: {$ne: true}
-        });
-        if (tasks.length != 0) {
-            return res.status(400).json({ message: TASK_TIMING_CONFLICTS_ERROR_MSG });
+        const toAdd = [];
+        if (enableRecurrence) {
+            for (let i = 0; i < repeatCount; i++) {
+                const currentStart = new Date(startDate);
+                const currentEnd = new Date(endDate);
+                if (repeat == 'daily') {
+                    currentStart.setDate(currentStart.getDate() + i);
+                    currentEnd.setDate(currentEnd.getDate() + i)
+                } else if (repeat == 'weekly') {
+                    currentStart.setDate(currentStart.getDate() + i * 7);
+                    currentEnd.setDate(currentEnd.getDate() + i * 7);
+                } else if (repeat == 'monthly') {
+                    currentStart.setMonth(currentStart.getMonth() + i);
+                    currentEnd.setMonth(currentEnd.getMonth() + i);
+                }
+                toAdd.push({ userId, title, description, 
+                    startDate: currentStart, 
+                    endDate: currentEnd, 
+                    isCompleted: false });
+            }
+        } else {
+            toAdd.push({ userId, title, description, startDate, endDate, isCompleted: false });
         }
 
-        const newTask = await Task.create({ 
-            userId, title, description, startDate, endDate, isCompleted : false
-        });
-        res.status(201).json({ 
-            message: TASK_CREATE_SUCCESS_MSG,
-            data: newTask
-        });
+        const conflicts = [];
+        const nonConflictingTasks = [...toAdd];
+        for (let i = 0; i < repeatCount; i++) {
+            const currTask = toAdd[i]
+            const tasks = await Task.find({ 
+                userId, 
+                startDate: {$lt: currTask.endDate}, 
+                endDate: {$gt: currTask.startDate},
+                isCompleted: {$ne: true}
+            });
+            if (tasks.length != 0) {
+                conflicts.push(`Task start: ${currTask.startDate}, Task end: ${currTask.endDate}`);
+                const ind = nonConflictingTasks.indexOf(currTask);
+                if (ind > -1) {
+                    nonConflictingTasks.splice(ind, 1);
+                }
+            }
+        }
+
+        const newTask = await Task.insertMany(nonConflictingTasks);
+        if (conflicts.length == 0) {
+            res.status(201).json({ message: TASK_CREATE_SUCCESS_MSG, data: newTask });
+        } else {
+            res.status(201).json({ 
+                message: TASK_TIMING_CONFLICTS_ERROR_MSG + conflicts.reduce((acc, err) => acc + '\n' + err, '')
+                    + "\nOTHER " + TASK_CREATE_SUCCESS_MSG,
+                data: newTask
+            });
+        }
     } catch (error) {
         res.status(500).json({ message: SERVER_ERROR_MSG, error: error.message });
     }

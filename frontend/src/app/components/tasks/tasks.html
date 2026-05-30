@@ -123,6 +123,22 @@
         formControlName="endDate"
       />
 
+      <label>
+        <input type="checkbox" formControlName="enableRecurrence">Recurring task
+      </label>
+      
+      <div *ngIf="taskForm.get('enableRecurrence')?.value">
+        <label>Repeat frequency</label>
+        <select formControlName="repeat">
+          <option value="daily">Daily</option>
+          <option value="weekly">Weekly</option>
+          <option value="monthly">Monthly</option>
+        </select>
+
+        <label>Occurrences</label>
+        <input type="number" formControlName="repeatCount">
+      </div>
+
       <button type="submit">
         {{ isEditing ? 'Update' : 'Create' }}
       </button>
