@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms";
 import { AuthService } from '../../services/authService';
 import { User } from '../../interfaces/user';
@@ -38,7 +38,7 @@ export class AdminDashboard implements OnInit, AfterViewInit {
 
 
   constructor(private formBuilder: FormBuilder, private service: AuthService, 
-    private adminService: AdminService) {
+    private adminService: AdminService, private cdr: ChangeDetectorRef) {
     this.addUserForm = this.formBuilder.group({
       users: this.formBuilder.array([this.createForm()])
     });
@@ -78,6 +78,7 @@ export class AdminDashboard implements OnInit, AfterViewInit {
       },
       error: (err) => {
         this.message = err.error.message;
+        this.cdr.detectChanges();
       }
     });
   }
@@ -115,6 +116,7 @@ export class AdminDashboard implements OnInit, AfterViewInit {
       },
       error: (err) => {
         this.message = err.error.message;
+        this.cdr.detectChanges();
       }
     });
   }
@@ -138,7 +140,10 @@ export class AdminDashboard implements OnInit, AfterViewInit {
         this.isEditing = false;
         this.selectedId = '';
       },
-      error: (err) => this.message = err.error.message
+      error: (err) => {
+        this.message = err.error.message;
+        this.cdr.detectChanges();
+      }
     });
   }
 
@@ -148,7 +153,10 @@ export class AdminDashboard implements OnInit, AfterViewInit {
         this.message = response.message;
         this.loadUsers();
       },
-      error: (err) => this.message = err.error.message
+      error: (err) => {
+        this.message = err.error.message;
+        this.cdr.detectChanges();
+      }
     });
   }
 }
