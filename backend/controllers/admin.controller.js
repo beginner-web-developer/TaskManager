@@ -1,4 +1,4 @@
-import { ADMIN_NOT_FOUND_ERROR_MSG, CREATE_ERROR_MSG, CREATE_SUCCESS_MSG, LOGIN_SUCCESS_MSG, LOGOUT_SUCCESS_MSG, SERVER_ERROR_MSG, USER_FOUND_ERROR_MSG, USER_NOT_FOUND_ERROR_MSG, USERS_LOADED_SUCCESS_MSG, WRONG_PASSWORD_ERROR_MSG } from "../config/constants.js";
+import { ADMIN_NOT_FOUND_ERROR_MSG, CREATE_ERROR_MSG, CREATE_SUCCESS_MSG, LOGIN_SUCCESS_MSG, LOGOUT_SUCCESS_MSG, SERVER_ERROR_MSG, USER_DELETED_SUCCESS_MSG, USER_FOUND_ERROR_MSG, USER_NOT_FOUND_ERROR_MSG, USER_UPDATED_SUCCESS_MSG, USERS_LOADED_SUCCESS_MSG, WRONG_PASSWORD_ERROR_MSG } from "../config/constants.js";
 import { Admin } from "../models/admin.model.js";
 import { User } from "../models/user.model.js";
 
@@ -114,6 +114,28 @@ const addUsers = async (req, res) => {
     }
 };
 
+const updateUser = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const updated = await User.findByIdAndUpdate(userId, req.body, {
+            returnDocument: "after"
+        });
+        res.status(200).json({ message: USER_UPDATED_SUCCESS_MSG, data: updated });
+    } catch (error) {
+        res.status(500).json({ message: SERVER_ERROR_MSG });
+    }
+};
+
+const deleteUser = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const deleted = await User.findByIdAndDelete(userId);
+        res.status(200).json({ message: USER_DELETED_SUCCESS_MSG, data: deleted });
+    } catch (error) {
+        res.status(500).json({ message: SERVER_ERROR_MSG });
+    }
+};
+
 export {
-    createAdmin, loginAdmin, logoutAdmin, viewUsers, addUsers
+    createAdmin, loginAdmin, logoutAdmin, viewUsers, addUsers, updateUser, deleteUser
 };

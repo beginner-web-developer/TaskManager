@@ -23,9 +23,12 @@ import { CommonModule } from '@angular/common';
 })
 export class AdminDashboard implements OnInit, AfterViewInit {
   addUserForm: FormGroup;
+  editUserForm: FormGroup;
   admin!: Admin;
   userList: User[] = [];
   message: string = '';
+  isEditing: boolean = false;
+  selectedId?: string;
 
   // table properties
   displayedColumns: string[] = ['username', 'email', 'actions'];
@@ -38,6 +41,11 @@ export class AdminDashboard implements OnInit, AfterViewInit {
     private adminService: AdminService) {
     this.addUserForm = this.formBuilder.group({
       users: this.formBuilder.array([this.createForm()])
+    });
+
+    this.editUserForm = this.formBuilder.group({
+      email: ['', [Validators.required, Validators.email]],
+      username: ['', [Validators.required]]
     });
 
     this.tableData = new MatTableDataSource(this.userList);
@@ -111,8 +119,36 @@ export class AdminDashboard implements OnInit, AfterViewInit {
     });
   }
 
-  // TODO: update and delete user
-  onClick(user: User): void {}
+  onClick(user: User): void {
+    this.isEditing = true;
+    this.selectedId = user._id;
+    this.editUserForm.patchValue({
+      email: user.email,
+      username: user.username
+    });
+  }
 
-  onDelete(userId: string): void {}
+  onUpdate(): void {
+    const data: User = this.editUserForm.value;
+    this.adminService.updateUser(this.selectedId || '', data).subscribe({
+      next: (response) => {
+        this.message = response.message;
+        this.loadUsers();
+        this.editUserForm.reset();
+        this.isEditing = false;
+        this.selectedId = '';
+      },
+      error: (err) => this.message = err.error.message
+    });
+  }
+
+  onDelete(userId: string): void {
+    this.adminService.deleteUser(userId).subscribe({
+      next: (response) => {
+        this.message = response.message;
+        this.loadUsers();
+      },
+      error: (err) => this.message = err.error.message
+    });
+  }
 }

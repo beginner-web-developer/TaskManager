@@ -52,9 +52,9 @@
 
     <p>{{ message }}</p>
 
-    <h2>Add Users</h2>
+    <h2>{{ isEditing ? "Edit User" : "Add Users" }}</h2>
 
-    <form [formGroup]="addUserForm" (ngSubmit)="onSubmit()">
+    <form [formGroup]="addUserForm" (ngSubmit)="onSubmit()" *ngIf="!isEditing">
         <div formArrayName="users">
             <div *ngFor="let user of users.controls; let i = index" [formGroupName]="i">
                 <input type="email" formControlName="email" placeholder="Email">
@@ -66,6 +66,12 @@
 
         <button type="button" (click)="addUser()">Add User</button>
         <button type="submit" [disabled]="addUserForm.invalid">Add all</button>
+    </form>
+
+    <form [formGroup]="editUserForm" (ngSubmit)="onUpdate()" *ngIf="isEditing">
+      <input type="email" placeholder="Email" formControlName="email"/>
+      <input type="text" placeholder="Username" formControlName="username"/>
+      <button type="submit">Update</button>
     </form>
 
   </div>
