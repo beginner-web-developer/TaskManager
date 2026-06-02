@@ -16,6 +16,12 @@ export class AuthService {
     email: '',
     password: ''
   });
+  public adminId = new BehaviorSubject<Admin>({
+    id: '',
+    username: '',
+    password: '',
+    company: ''
+  })
   constructor(private httpClient: HttpClient) {}
 
   register(userData: User): Observable<UserResponse> {

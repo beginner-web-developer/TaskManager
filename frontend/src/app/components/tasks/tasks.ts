@@ -128,12 +128,9 @@ export class Tasks implements OnInit, AfterViewInit {
       return this.onUpdate(this.selectedTaskId || '');
     }
     const taskData: Task = this.taskForm.value;
-    console.log(taskData);
     this.service.createTask(taskData, this.userId || '').subscribe({
       next: (response) => {
-        this.message = response.message;
-        console.log(this.message);
-        console.log(response.data);
+        this.message = response.message;  
         this.cdr.detectChanges();
         this.taskForm.reset();
         this.loadTasks();

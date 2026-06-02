@@ -30,7 +30,7 @@ export class Login {
       const data: Admin = this.loginForm.value;
       this.service.loginAdmin(data).subscribe({
         next: (response) => {
-          this.service.userId.next(response.data);
+          this.service.adminId.next(response.data);
           this.router.navigate(["/admin/dashboard"]);
           this.loginForm.reset();
         },

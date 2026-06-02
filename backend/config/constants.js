@@ -23,3 +23,9 @@ export const TASK_READ_SUCCESS_MSG = "Tasks successfully retrieved!";
 export const TASK_UPDATE_SUCCESS_MSG = "Task updated successfully!";
 export const TASK_DELETE_SUCCESS_MSG = "Task deleted successfully!";
 export const TASK_MARK_SUCCESS_MSG = "Task status updated successfully!";
+
+// admin error messages
+export const ADMIN_NOT_FOUND_ERROR_MSG = "Admin user not found!";
+
+// admin success messages
+export const USERS_LOADED_SUCCESS_MSG = "Users successfully loaded!";

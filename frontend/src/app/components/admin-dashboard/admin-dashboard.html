@@ -1,0 +1,74 @@
+<h1>Welcome {{ admin.username }}</h1>
+<br>
+
+<div class="container">
+
+  <!-- LEFT SIDE -->
+  <div class="user-table">
+    <h2>Current Users of {{ admin.company }}:</h2>
+    <p *ngIf="userList.length == 0">No users currently.</p>
+    <input
+      matInput
+      placeholder="Search users by username"
+      (keyup)="applyFilter($any($event.target).value)"
+    >
+
+    <table mat-table [dataSource]="tableData" matSort>
+      
+      <ng-container matColumnDef="username">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Username</th>
+        <td mat-cell *matCellDef="let user">{{ user.username }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="email">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Email</th>
+        <td mat-cell *matCellDef="let user">{{ user.email }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>
+          Actions
+        </th>
+        <td mat-cell *matCellDef="let user">
+          <button (click)="onClick(user)">Update</button>
+          <button (click)="onDelete(user._id || '')">Remove</button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+
+    <mat-paginator
+      [pageSize]="5"
+      [pageSizeOptions]="[5, 10, 20]"
+      showFirstLastButtons>
+    </mat-paginator>
+  </div>
+
+  <!-- RIGHT SIDE -->
+  <div class="user-form">
+
+    <p>{{ message }}</p>
+
+    <h2>Add Users</h2>
+
+    <form [formGroup]="addUserForm" (ngSubmit)="onSubmit()">
+        <div formArrayName="users">
+            <div *ngFor="let user of users.controls; let i = index" [formGroupName]="i">
+                <input type="email" formControlName="email" placeholder="Email">
+                <input type="text" formControlName="username" placeholder="Username">
+                <input type="password" formControlName="password" placeholder="Password">
+                <button type="button" (click)="removeUser(i)" [disabled]="users.length == 1">Remove</button>
+            </div>
+        </div>
+
+        <button type="button" (click)="addUser()">Add User</button>
+        <button type="submit" [disabled]="addUserForm.invalid">Add all</button>
+    </form>
+
+  </div>
+
+</div>
+
