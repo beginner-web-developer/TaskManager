@@ -75,7 +75,7 @@ export class Tasks implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-      this.userId = this.auth.userId.value.id;
+      this.userId = this.auth.userId.value._id;
       this.username = this.auth.userId.value.username;
       this.loadTasks();
       this.taskForm.get('enableRecurrence')?.valueChanges.subscribe(enabled => {
@@ -114,11 +114,11 @@ export class Tasks implements OnInit, AfterViewInit {
           this.tableData.data = this.taskList;
           this.tableData.paginator = this.paginator;
           this.tableData.sort = this.sort;
-          this.cdr.detectChanges();
+          //this.cdr.detectChanges();
         },
         error: (err) => {
           this.message = err.error.message;
-          this.cdr.detectChanges();
+          //this.cdr.detectChanges();
         }
       });
   }
@@ -131,14 +131,13 @@ export class Tasks implements OnInit, AfterViewInit {
     this.service.createTask(taskData, this.userId || '').subscribe({
       next: (response) => {
         this.message = response.message;  
-        this.cdr.detectChanges();
+        //this.cdr.detectChanges();
         this.taskForm.reset();
         this.loadTasks();
       },
       error: (err) => {
         this.message = err.error.message;
-        console.log(this.message);
-        this.cdr.detectChanges();
+        //this.cdr.detectChanges();
       }
     });
   }
@@ -162,14 +161,14 @@ export class Tasks implements OnInit, AfterViewInit {
     this.service.updateTask(taskData, taskId).subscribe({
       next: (response) => {
         this.message = response.message;
-        this.cdr.detectChanges();
+        //this.cdr.detectChanges();
         this.taskForm.reset();
         this.isEditing = false;
         this.loadTasks();
       },
       error: (err) => {
         this.message = err.error.message;
-        this.cdr.detectChanges();
+        //this.cdr.detectChanges();
       }
     });
   }
@@ -178,12 +177,12 @@ export class Tasks implements OnInit, AfterViewInit {
     this.service.deleteTask(taskId).subscribe({
       next: (response) => {
         this.message = response.message;
-        this.cdr.detectChanges();
+        //this.cdr.detectChanges();
         this.loadTasks();
       },
       error: (err) => {
         this.message = err.error.message;
-        this.cdr.detectChanges();
+        //this.cdr.detectChanges();
       }
     });
   }

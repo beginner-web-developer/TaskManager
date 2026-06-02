@@ -69,7 +69,7 @@ export class AdminDashboard implements OnInit, AfterViewInit {
   }
 
   loadUsers(): void {
-    this.adminService.getUsers(this.admin.id || '').subscribe({
+    this.adminService.getUsers(this.admin._id || '').subscribe({
       next: (response) => {
         this.userList = response.data;
         this.tableData.data = this.userList;

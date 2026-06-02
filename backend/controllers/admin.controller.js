@@ -18,7 +18,7 @@ const createAdmin = async (req, res) => {
         res.status(201).json({
             message: CREATE_SUCCESS_MSG,
             data: {
-                id: user._id,
+                _id: user._id,
                 username: user.username,
                 company: user.company
             }
@@ -44,7 +44,7 @@ const loginAdmin = async (req, res) => {
         res.status(200).json({ 
             message: LOGIN_SUCCESS_MSG,
             data: {
-                id: user._id,
+                _id: user._id,
                 username: user.username,
                 company: user.company
             }

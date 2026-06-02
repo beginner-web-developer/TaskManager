@@ -11,13 +11,13 @@ export class AuthService {
   private apiUserUrl: string = "http://localhost:4000/api/v1/users";
   private apiAdminUrl: string = "http://localhost:4000/api/v1/admin";
   public userId = new BehaviorSubject<User>({
-    id: '',
+    _id: '',
     username: '',
     email: '',
     password: ''
   });
   public adminId = new BehaviorSubject<Admin>({
-    id: '',
+    _id: '',
     username: '',
     password: '',
     company: ''
