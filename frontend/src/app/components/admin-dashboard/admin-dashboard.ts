@@ -13,6 +13,7 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { CommonModule } from '@angular/common';
+import Papa from "papaparse";
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -107,15 +108,49 @@ export class AdminDashboard implements OnInit, AfterViewInit {
     const data: User[] = this.addUserForm.value['users'].map(
       (user: User) => ({...user, company: this.admin.company})
     );
-    this.adminService.addUsers(data).subscribe({
+
+    const validUsers: User[] = [];
+    const errors: string[] = [];
+    const usernameSet = new Set<String>;
+    // validations
+    data.forEach((user, index) => {
+      if (!user.email) {
+        errors.push(`User ${index + 1}: Missing email`)
+      }
+      if (!user.username) {
+        errors.push(`User ${index + 1}: Missing username`)
+      }
+      if (!user.password) {
+        errors.push(`User ${index + 1}: Missing password`)
+      }
+      if (usernameSet.has(user.username)) {
+        errors.push(`User ${index + 1} has duplicate username`);
+      }
+      if (user.email && user.username && user.password && 
+        !usernameSet.has(user.username)) {
+        validUsers.push(user);
+        usernameSet.add(user.username);
+      }
+    });
+
+    this.message = errors.join(', ');
+    this.adminService.addUsers(validUsers).subscribe({
       next: (response) => {
-        this.message = response.message;
+        if (errors.length == 0) {
+          this.message = response.message;
+        } else {
+          this.message += `\n${response.message}`;
+        }
         this.loadUsers();
         this.users.clear();
         this.users.push(this.createForm());
       },
       error: (err) => {
-        this.message = err.error.message;
+        if (errors.length == 0) {
+          this.message = err.error.message;
+        } else {
+          this.message += `\n${err.error.message}`;
+        }
         this.cdr.detectChanges();
       }
     });
@@ -156,6 +191,69 @@ export class AdminDashboard implements OnInit, AfterViewInit {
       error: (err) => {
         this.message = err.error.message;
         this.cdr.detectChanges();
+      }
+    });
+  }
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (!input.files?.length) return;
+
+    const file = input.files[0];
+    Papa.parse<User>(file, {
+      header: true,
+      skipEmptyLines: true,
+      transformHeader: (header) => header.trim().toLowerCase().replace(/\s+/g, ''),
+      complete: (result) => {
+        const users: User[] = result.data.map((user: User) => 
+          ({ ...user, company: this.admin.company })
+        );
+        const validUsers: User[] = [];
+        const valid: string[] = [];
+        const errors: string[] = [];
+        const usernameSet = new Set<String>;
+        // validations
+        users.forEach((user, index) => {
+          if (!user.email) {
+            errors.push(`Row ${index + 2}: Missing email`)
+          }
+          if (!user.username) {
+            errors.push(`Row ${index + 2}: Missing username`)
+          }
+          if (!user.password) {
+            errors.push(`Row ${index + 2}: Missing password`)
+          }
+          if (usernameSet.has(user.username)) {
+            errors.push(`Row ${index + 2} has duplicate username`);
+          }
+          if (user.email && user.username && user.password && 
+            !usernameSet.has(user.username)) {
+            validUsers.push(user);
+            usernameSet.add(user.username);
+            valid.push(`Row ${index + 2} `);
+          }
+        });
+
+        this.message = errors.join(', ');
+        if (validUsers.length == 0) return;
+        this.adminService.addUsers(validUsers).subscribe({
+          next: (response) => {
+            if (errors.length == 0) {
+              this.message = response.message;
+            } else {
+              this.message += ` ${valid.join(',')} ${response.message}`;
+            }
+            this.loadUsers();
+          },
+          error: (err) => {
+            if (errors.length == 0) {
+              this.message = err.error.message;
+            } else {
+              this.message += `\n${err.error.message}`;
+            }
+            this.cdr.detectChanges();
+          }
+        });
       }
     });
   }

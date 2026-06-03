@@ -55,13 +55,14 @@
     <h2>{{ isEditing ? "Edit User" : "Add Users" }}</h2>
 
     <form [formGroup]="addUserForm" (ngSubmit)="onSubmit()" *ngIf="!isEditing">
+      <input type="file" accept=".csv" (change)="onFileSelected($event)">
         <div formArrayName="users">
-            <div *ngFor="let user of users.controls; let i = index" [formGroupName]="i">
-                <input type="email" formControlName="email" placeholder="Email">
-                <input type="text" formControlName="username" placeholder="Username">
-                <input type="password" formControlName="password" placeholder="Password">
-                <button type="button" (click)="removeUser(i)" [disabled]="users.length == 1">Remove</button>
-            </div>
+          <div *ngFor="let user of users.controls; let i = index" [formGroupName]="i">
+            <input type="email" formControlName="email" placeholder="Email">
+            <input type="text" formControlName="username" placeholder="Username">
+            <input type="password" formControlName="password" placeholder="Password">
+            <button type="button" (click)="removeUser(i)" [disabled]="users.length == 1">Remove</button>
+          </div>
         </div>
 
         <button type="button" (click)="addUser()">Add User</button>
