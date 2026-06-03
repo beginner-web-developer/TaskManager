@@ -2,7 +2,7 @@ import mongoose, { Schema } from "mongoose";
 import bcrypt from "bcrypt";
 
 const adminSchema = new Schema({
-    username: String,
+    username: { type: String, unique: true },
     password: String,
     company: String
 });

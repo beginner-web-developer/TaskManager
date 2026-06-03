@@ -134,12 +134,13 @@ export class AdminDashboard implements OnInit, AfterViewInit {
     });
 
     this.message = errors.join(', ');
+    if (validUsers.length == 0) return;
     this.adminService.addUsers(validUsers).subscribe({
       next: (response) => {
         if (errors.length == 0) {
           this.message = response.message;
         } else {
-          this.message += `\n${response.message}`;
+          this.message += ` ${response.message}`;
         }
         this.loadUsers();
         this.users.clear();
@@ -209,7 +210,6 @@ export class AdminDashboard implements OnInit, AfterViewInit {
           ({ ...user, company: this.admin.company })
         );
         const validUsers: User[] = [];
-        const valid: string[] = [];
         const errors: string[] = [];
         const usernameSet = new Set<String>;
         // validations
@@ -230,7 +230,6 @@ export class AdminDashboard implements OnInit, AfterViewInit {
             !usernameSet.has(user.username)) {
             validUsers.push(user);
             usernameSet.add(user.username);
-            valid.push(`Row ${index + 2} `);
           }
         });
 
@@ -241,7 +240,7 @@ export class AdminDashboard implements OnInit, AfterViewInit {
             if (errors.length == 0) {
               this.message = response.message;
             } else {
-              this.message += ` ${valid.join(',')} ${response.message}`;
+              this.message += ` ${response.message}`;
             }
             this.loadUsers();
           },

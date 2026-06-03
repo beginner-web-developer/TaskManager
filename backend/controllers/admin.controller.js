@@ -1,6 +1,7 @@
 import { ADMIN_NOT_FOUND_ERROR_MSG, CREATE_ERROR_MSG, CREATE_SUCCESS_MSG, LOGIN_SUCCESS_MSG, LOGOUT_SUCCESS_MSG, SERVER_ERROR_MSG, USER_DELETED_SUCCESS_MSG, USER_FOUND_ERROR_MSG, USER_NOT_FOUND_ERROR_MSG, USER_UPDATED_SUCCESS_MSG, USERS_LOADED_SUCCESS_MSG, WRONG_PASSWORD_ERROR_MSG } from "../config/constants.js";
 import { Admin } from "../models/admin.model.js";
 import { User } from "../models/user.model.js";
+import bcrypt from "bcrypt";
 
 const createAdmin = async (req, res) => {
     try {
@@ -87,6 +88,13 @@ const addUsers = async (req, res) => {
         const users = req.body;
         const toAdd = [];
         const conflicts = [];
+        const usernames = users.map(user => user.username);
+        const usernameSet = new Set(
+            (await User.find({ username: {$in: usernames} })
+            .select("username")
+            .lean())
+            .map(user => user.username));
+            
         for (let i = 0; i < users.length; i++) {
             const { email, username, password, company } = users[i];
             if (!email || !username || !password) {
@@ -94,23 +102,26 @@ const addUsers = async (req, res) => {
                 continue;
             }
 
-            const foundUser = await User.findOne({ username: username });
-            if (foundUser) {
+            if (usernameSet.has(username)) {
                 conflicts.push(`Error for user: ${username} --- ${USER_FOUND_ERROR_MSG}`);
                 continue;
             }
             toAdd.push(users[i])
         }
-        const added = await User.insertMany(toAdd);
-        if (conflicts.length == 0) {
-            res.status(201).json({ message: CREATE_SUCCESS_MSG, data: added });
-        } else {
-            res.status(201).json({ message: conflicts.reduce((acc, err) => 
-                acc + "\n" + err, ''), 
-                data: added});
-        }
+        const hashedUsers = await Promise.all(
+            toAdd.map(async user => ({
+                ...user,
+                password: await bcrypt.hash(user.password, 10)
+            }))
+        );
+        const added = await User.insertMany(hashedUsers);
+        res.status(201).json({ 
+            message: CREATE_SUCCESS_MSG, 
+            data: added, 
+            conflicts: conflicts.join(', ')
+        });
     } catch (error) {
-        res.status(500).json({ message: SERVER_ERROR_MSG });
+        res.status(500).json({ message: SERVER_ERROR_MSG, error: error.message });
     }
 };
 
