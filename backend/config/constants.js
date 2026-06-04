@@ -31,3 +31,9 @@ export const ADMIN_NOT_FOUND_ERROR_MSG = "Admin user not found!";
 export const USERS_LOADED_SUCCESS_MSG = "Users successfully loaded!";
 export const USER_UPDATED_SUCCESS_MSG = "User successfully updated!";
 export const USER_DELETED_SUCCESS_MSG = "User successfully deleted!";
+
+// email error messages
+export const INVALID_TYPE_ERROR_MSG = "Invalid type!";
+
+// email success messages
+export const EMAIL_SUCCESS_MSG = "Email sent successfully!";

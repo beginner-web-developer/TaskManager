@@ -1,4 +1,5 @@
-import { ADMIN_NOT_FOUND_ERROR_MSG, CREATE_ERROR_MSG, CREATE_SUCCESS_MSG, LOGIN_SUCCESS_MSG, LOGOUT_SUCCESS_MSG, SERVER_ERROR_MSG, USER_DELETED_SUCCESS_MSG, USER_FOUND_ERROR_MSG, USER_NOT_FOUND_ERROR_MSG, USER_UPDATED_SUCCESS_MSG, USERS_LOADED_SUCCESS_MSG, WRONG_PASSWORD_ERROR_MSG } from "../config/constants.js";
+import { ADMIN_NOT_FOUND_ERROR_MSG, CREATE_ERROR_MSG, CREATE_SUCCESS_MSG, EMAIL_SUCCESS_MSG, LOGIN_SUCCESS_MSG, LOGOUT_SUCCESS_MSG, SERVER_ERROR_MSG, USER_DELETED_SUCCESS_MSG, USER_FOUND_ERROR_MSG, USER_NOT_FOUND_ERROR_MSG, USER_UPDATED_SUCCESS_MSG, USERS_LOADED_SUCCESS_MSG, WRONG_PASSWORD_ERROR_MSG } from "../config/constants.js";
+import userEmailService from "../config/email.js";
 import { Admin } from "../models/admin.model.js";
 import { User } from "../models/user.model.js";
 import bcrypt from "bcrypt";
@@ -115,13 +116,14 @@ const addUsers = async (req, res) => {
             }))
         );
         const added = await User.insertMany(hashedUsers);
+        await userEmailService(toAdd, "create");
         res.status(201).json({ 
-            message: CREATE_SUCCESS_MSG, 
+            message: `${CREATE_SUCCESS_MSG} ${EMAIL_SUCCESS_MSG}`, 
             data: added, 
             conflicts: conflicts.join(', ')
         });
     } catch (error) {
-        res.status(500).json({ message: SERVER_ERROR_MSG, error: error.message });
+        res.status(500).json({ message: SERVER_ERROR_MSG });
     }
 };
 
@@ -131,7 +133,11 @@ const updateUser = async (req, res) => {
         const updated = await User.findByIdAndUpdate(userId, req.body, {
             returnDocument: "after"
         });
-        res.status(200).json({ message: USER_UPDATED_SUCCESS_MSG, data: updated });
+        await userEmailService(updated, "update");
+        res.status(200).json({ 
+            message: `${USER_UPDATED_SUCCESS_MSG} ${EMAIL_SUCCESS_MSG}`, 
+            data: updated 
+        });
     } catch (error) {
         res.status(500).json({ message: SERVER_ERROR_MSG });
     }
