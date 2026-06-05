@@ -91,8 +91,7 @@ export class AdminDashboard implements OnInit, AfterViewInit {
   createForm(): FormGroup {
     return this.formBuilder.group({
       email: ['', [Validators.required, Validators.email]],
-      username: ['', [Validators.required]],
-      password: ['', [Validators.required]]
+      username: ['', [Validators.required]]
     });
   }
 
@@ -111,7 +110,7 @@ export class AdminDashboard implements OnInit, AfterViewInit {
   onSubmit(): void {
     this.isLoading = true;
     const data: User[] = this.addUserForm.value['users'].map(
-      (user: User) => ({...user, company: this.admin.company})
+      (user: User) => ({...user, company: this.admin.company, password: this.generatePassword()})
     );
 
     const validUsers: User[] = [];
@@ -125,14 +124,10 @@ export class AdminDashboard implements OnInit, AfterViewInit {
       if (!user.username) {
         errors.push(`User ${index + 1}: Missing username`)
       }
-      if (!user.password) {
-        errors.push(`User ${index + 1}: Missing password`)
-      }
       if (usernameSet.has(user.username)) {
         errors.push(`User ${index + 1} has duplicate username`);
       }
-      if (user.email && user.username && user.password && 
-        !usernameSet.has(user.username)) {
+      if (user.email && user.username && !usernameSet.has(user.username)) {
         validUsers.push(user);
         usernameSet.add(user.username);
       }
@@ -222,7 +217,7 @@ export class AdminDashboard implements OnInit, AfterViewInit {
       transformHeader: (header) => header.trim().toLowerCase().replace(/\s+/g, ''),
       complete: (result) => {
         const users: User[] = result.data.map((user: User) => 
-          ({ ...user, company: this.admin.company })
+          ({ ...user, company: this.admin.company, password: this.generatePassword() })
         );
         const validUsers: User[] = [];
         const errors: string[] = [];
@@ -235,14 +230,10 @@ export class AdminDashboard implements OnInit, AfterViewInit {
           if (!user.username) {
             errors.push(`Row ${index + 2}: Missing username`)
           }
-          if (!user.password) {
-            errors.push(`Row ${index + 2}: Missing password`)
-          }
           if (usernameSet.has(user.username)) {
             errors.push(`Row ${index + 2} has duplicate username`);
           }
-          if (user.email && user.username && user.password && 
-            !usernameSet.has(user.username)) {
+          if (user.email && user.username && !usernameSet.has(user.username)) {
             validUsers.push(user);
             usernameSet.add(user.username);
           }
@@ -274,5 +265,15 @@ export class AdminDashboard implements OnInit, AfterViewInit {
         });
       }
     });
+  }
+
+  generatePassword(length: number = 12): string {
+    const chars: string = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
+    const randomValues = new Uint32Array(length);
+    crypto.getRandomValues(randomValues);
+
+    return Array.from(randomValues)
+      .map(value => chars[value % chars.length])
+      .join('');
   }
 }
