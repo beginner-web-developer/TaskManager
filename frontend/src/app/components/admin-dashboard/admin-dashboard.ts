@@ -12,13 +12,15 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { CommonModule } from '@angular/common';
 import Papa from "papaparse";
+import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-admin-dashboard',
   imports: [ReactiveFormsModule, CommonModule, MatTableModule,
-    MatPaginatorModule, MatSortModule, MatInputModule, MatFormFieldModule],
+    MatPaginatorModule, MatSortModule, MatInputModule, MatFormFieldModule, MatProgressSpinnerModule],
   templateUrl: './admin-dashboard.html',
   styleUrl: './admin-dashboard.css',
 })
@@ -30,6 +32,8 @@ export class AdminDashboard implements OnInit, AfterViewInit {
   message: string = '';
   isEditing: boolean = false;
   selectedId?: string;
+
+  isLoading: boolean = false;
 
   // table properties
   displayedColumns: string[] = ['username', 'email', 'actions'];
@@ -105,6 +109,7 @@ export class AdminDashboard implements OnInit, AfterViewInit {
   }
 
   onSubmit(): void {
+    this.isLoading = true;
     const data: User[] = this.addUserForm.value['users'].map(
       (user: User) => ({...user, company: this.admin.company})
     );
@@ -135,7 +140,11 @@ export class AdminDashboard implements OnInit, AfterViewInit {
 
     this.message = errors.join(', ');
     if (validUsers.length == 0) return;
-    this.adminService.addUsers(validUsers).subscribe({
+    this.adminService.addUsers(validUsers)
+    .pipe(
+      finalize(() => this.isLoading = false)
+    )
+    .subscribe({
       next: (response) => {
         if (errors.length == 0) {
           this.message = response.message;
@@ -167,8 +176,13 @@ export class AdminDashboard implements OnInit, AfterViewInit {
   }
 
   onUpdate(): void {
+    this.isLoading = true;
     const data: User = this.editUserForm.value;
-    this.adminService.updateUser(this.selectedId || '', data).subscribe({
+    this.adminService.updateUser(this.selectedId || '', data)
+    .pipe(
+      finalize(() => this.isLoading = false)
+    )
+    .subscribe({
       next: (response) => {
         this.message = response.message;
         this.loadUsers();
@@ -197,6 +211,7 @@ export class AdminDashboard implements OnInit, AfterViewInit {
   }
 
   onFileSelected(event: Event): void {
+    this.isLoading = true;
     const input = event.target as HTMLInputElement;
     if (!input.files?.length) return;
 
@@ -235,7 +250,11 @@ export class AdminDashboard implements OnInit, AfterViewInit {
 
         this.message = errors.join(', ');
         if (validUsers.length == 0) return;
-        this.adminService.addUsers(validUsers).subscribe({
+        this.adminService.addUsers(validUsers)
+        .pipe(
+          finalize(() => this.isLoading = false)
+        )
+        .subscribe({
           next: (response) => {
             if (errors.length == 0) {
               this.message = response.message;

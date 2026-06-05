@@ -65,8 +65,8 @@
           </div>
         </div>
 
-        <button type="button" (click)="addUser()">Add User</button>
-        <button type="submit" [disabled]="addUserForm.invalid">Add all</button>
+        <button type="button" (click)="addUser()" [disabled]="isLoading">Add User</button>
+        <button type="submit" [disabled]="addUserForm.invalid || isLoading">Add all</button>
     </form>
 
     <form [formGroup]="editUserForm" (ngSubmit)="onUpdate()" *ngIf="isEditing">
@@ -74,6 +74,11 @@
       <input type="text" placeholder="Username" formControlName="username"/>
       <button type="submit">Update</button>
     </form>
+
+    <div *ngIf="isLoading">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Creating users and sending emails...</p>
+    </div>
 
   </div>
 
