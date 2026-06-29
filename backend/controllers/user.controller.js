@@ -1,4 +1,4 @@
-import { CREATE_ERROR_MSG, CREATE_SUCCESS_MSG, LOGIN_SUCCESS_MSG, LOGOUT_SUCCESS_MSG, SERVER_ERROR_MSG, USER_FOUND_ERROR_MSG, USER_NOT_FOUND_ERROR_MSG, WRONG_PASSWORD_ERROR_MSG } from "../config/constants.js";
+import { CREATE_ERROR_MSG, CREATE_SUCCESS_MSG, LOGIN_SUCCESS_MSG, LOGOUT_SUCCESS_MSG, SERVER_ERROR_MSG, USER_FOUND_ERROR_MSG, USER_NOT_FOUND_ERROR_MSG, USER_UPDATED_SUCCESS_MSG, WRONG_PASSWORD_ERROR_MSG } from "../config/constants.js";
 import { User } from "../models/user.model.js";
 
 const createUser = async (req, res) => {
@@ -21,7 +21,9 @@ const createUser = async (req, res) => {
             data: {
                 _id: user._id,
                 username: user.username,
-                email: user.email
+                email: user.email,
+                isManager: user.isManager,
+                managerId: user.managerId
             }
         });
     } catch (error) {
@@ -47,7 +49,9 @@ const loginUser = async (req, res) => {
             data: {
                 _id: user._id,
                 username: user.username,
-                email: user.email
+                email: user.email,
+                isManager: user.isManager,
+                managerId: user.managerId
             }
         });
     } catch (error) {

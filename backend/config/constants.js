@@ -37,3 +37,9 @@ export const INVALID_TYPE_ERROR_MSG = "Invalid type!";
 
 // email success messages
 export const EMAIL_SUCCESS_MSG = "Email sent successfully!";
+
+// manager error messages
+export const MANAGER_NOT_FOUND_ERROR_MSG = "Manager not found!";
+
+// manager success messages
+export const EMPLOYEES_FOUND_SUCCESS_MSG = "Employees successfully retrieved!";

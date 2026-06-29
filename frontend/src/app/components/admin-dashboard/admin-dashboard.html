@@ -25,6 +25,31 @@
         <td mat-cell *matCellDef="let user">{{ user.email }}</td>
       </ng-container>
 
+      <ng-container matColumnDef="managerId">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Manager</th>
+        <td mat-cell *matCellDef="let user">
+          <span *ngIf="user.managerId; else assignButton">
+            {{ user.managerId.username }}
+            <button mat-icon-button [matMenuTriggerFor]="managerMenu">
+              <mat-icon>edit</mat-icon>
+            </button>
+          </span>
+
+          <ng-template #assignButton>
+            <button mat-stroked-button [matMenuTriggerFor]="managerMenu">Assign</button>
+          </ng-template>
+
+          <mat-menu #managerMenu="matMenu">
+            <button mat-menu-item 
+              *ngFor="let manager of managers" 
+              (click)="onAssign(user._id || '', manager._id || '')">
+              <mat-icon *ngIf="manager._id === user.managerId?._id">check</mat-icon>
+              {{ manager.username }}
+            </button>
+          </mat-menu>
+        </td>
+      </ng-container>
+
       <ng-container matColumnDef="actions">
         <th mat-header-cell *matHeaderCellDef>
           Actions
@@ -60,6 +85,9 @@
           <div *ngFor="let user of users.controls; let i = index" [formGroupName]="i">
             <input type="email" formControlName="email" placeholder="Email">
             <input type="text" formControlName="username" placeholder="Username">
+            <label>
+              <input type="checkbox" formControlName="isManager">Is Manager
+            </label>
             <button type="button" (click)="removeUser(i)" [disabled]="users.length == 1">Remove</button>
           </div>
         </div>
@@ -71,6 +99,9 @@
     <form [formGroup]="editUserForm" (ngSubmit)="onUpdate()" *ngIf="isEditing">
       <input type="email" placeholder="Email" formControlName="email"/>
       <input type="text" placeholder="Username" formControlName="username"/>
+      <label>
+        <input type="checkbox" formControlName="isManager">Is Manager
+      </label>
       <button type="submit">Update</button>
     </form>
 

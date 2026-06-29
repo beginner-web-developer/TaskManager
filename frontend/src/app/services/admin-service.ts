@@ -18,7 +18,7 @@ export class AdminService {
     return this.httpClient.post<UserResponseList>(`${this.apiAdminUrl}/addUsers`, users);
   }
 
-  updateUser(userId: string, updated: User): Observable<UserResponse> {
+  updateUser(userId: string, updated: Partial<User>): Observable<UserResponse> {
     return this.httpClient.patch<UserResponse>(
       `${this.apiAdminUrl}/updateUser/${userId}`, 
       updated);
@@ -26,5 +26,9 @@ export class AdminService {
 
   deleteUser(userId: string): Observable<UserResponse> {
     return this.httpClient.delete<UserResponse>(`${this.apiAdminUrl}/deleteUser/${userId}`);
+  }
+
+  getManagers(userId: string): Observable<UserResponseList> {
+    return this.httpClient.get<UserResponseList>(`${this.apiAdminUrl}/getManagers/${userId}`);
   }
 }

@@ -4,6 +4,8 @@ export interface User {
     username: string;
     password: string;
     company?: string;
+    isManager: boolean;
+    managerId?: string;
 }
 
 export interface UserResponse {

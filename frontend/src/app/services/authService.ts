@@ -14,7 +14,8 @@ export class AuthService {
     _id: '',
     username: '',
     email: '',
-    password: ''
+    password: '',
+    isManager: false
   });
   public adminId = new BehaviorSubject<Admin>({
     _id: '',

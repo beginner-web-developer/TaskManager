@@ -77,7 +77,7 @@ const viewUsers = async (req, res) => {
             return res.status(400).json({ message: ADMIN_NOT_FOUND_ERROR_MSG });
         }
 
-        const users = await User.find({ company: admin.company });
+        const users = await User.find({ company: admin.company }).populate("managerId");
         res.status(200).json({ message: USERS_LOADED_SUCCESS_MSG, data: users });
     } catch (error) {
         res.status(500).json({ message: SERVER_ERROR_MSG });
@@ -153,6 +153,22 @@ const deleteUser = async (req, res) => {
     }
 };
 
+const getManagers = async (req, res) => {
+    try {
+        const { adminId } = req.params;
+        const admin = await Admin.findById(adminId);
+        if (!admin) {
+            return res.status(400).json({ message: ADMIN_NOT_FOUND_ERROR_MSG });
+        }
+
+        const managers = await User.find({ company: admin.company, isManager: true });
+        res.status(200).json({ message: USERS_LOADED_SUCCESS_MSG, data: managers });
+    } catch (error) {
+        res.status(500).json({ message: SERVER_ERROR_MSG });
+    }
+};
+
 export {
-    createAdmin, loginAdmin, logoutAdmin, viewUsers, addUsers, updateUser, deleteUser
+    createAdmin, loginAdmin, logoutAdmin, viewUsers, addUsers, updateUser, deleteUser,
+    getManagers
 };

@@ -13,6 +13,9 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import Papa from "papaparse";
 import { finalize } from 'rxjs';
@@ -20,7 +23,9 @@ import { finalize } from 'rxjs';
 @Component({
   selector: 'app-admin-dashboard',
   imports: [ReactiveFormsModule, CommonModule, MatTableModule,
-    MatPaginatorModule, MatSortModule, MatInputModule, MatFormFieldModule, MatProgressSpinnerModule],
+    MatPaginatorModule, MatSortModule, MatInputModule, MatFormFieldModule, MatProgressSpinnerModule,
+    MatMenuModule, MatButtonModule, MatIconModule
+  ],
   templateUrl: './admin-dashboard.html',
   styleUrl: './admin-dashboard.css',
 })
@@ -32,11 +37,12 @@ export class AdminDashboard implements OnInit, AfterViewInit {
   message: string = '';
   isEditing: boolean = false;
   selectedId?: string;
+  managers: User[] = [];
 
   isLoading: boolean = false;
 
   // table properties
-  displayedColumns: string[] = ['username', 'email', 'actions'];
+  displayedColumns: string[] = ['username', 'email', 'managerId', 'actions'];
   tableData: MatTableDataSource<User>;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -50,7 +56,8 @@ export class AdminDashboard implements OnInit, AfterViewInit {
 
     this.editUserForm = this.formBuilder.group({
       email: ['', [Validators.required, Validators.email]],
-      username: ['', [Validators.required]]
+      username: ['', [Validators.required]],
+      isManager: [false, [Validators.required]]
     });
 
     this.tableData = new MatTableDataSource(this.userList);
@@ -62,6 +69,7 @@ export class AdminDashboard implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.admin = this.service.adminId.value;
     this.loadUsers();
+    this.loadManagers();
   }
 
   ngAfterViewInit() {
@@ -88,10 +96,24 @@ export class AdminDashboard implements OnInit, AfterViewInit {
     });
   }
 
+  loadManagers(): void {
+    this.adminService.getManagers(this.admin._id || '').subscribe({
+      next: (response) => {
+        this.managers = response.data;
+        console.log(response.data);
+      },
+      error: (err) => {
+        this.message = err.error.message;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
   createForm(): FormGroup {
     return this.formBuilder.group({
       email: ['', [Validators.required, Validators.email]],
-      username: ['', [Validators.required]]
+      username: ['', [Validators.required]],
+      isManager: [false, [Validators.required]]
     });
   }
 
@@ -147,6 +169,7 @@ export class AdminDashboard implements OnInit, AfterViewInit {
           this.message += ` ${response.message}`;
         }
         this.loadUsers();
+        this.loadManagers();
         this.users.clear();
         this.users.push(this.createForm());
       },
@@ -166,7 +189,8 @@ export class AdminDashboard implements OnInit, AfterViewInit {
     this.selectedId = user._id;
     this.editUserForm.patchValue({
       email: user.email,
-      username: user.username
+      username: user.username,
+      isManager: user.isManager
     });
   }
 
@@ -181,6 +205,7 @@ export class AdminDashboard implements OnInit, AfterViewInit {
       next: (response) => {
         this.message = response.message;
         this.loadUsers();
+        this.loadManagers();
         this.editUserForm.reset();
         this.isEditing = false;
         this.selectedId = '';
@@ -197,6 +222,7 @@ export class AdminDashboard implements OnInit, AfterViewInit {
       next: (response) => {
         this.message = response.message;
         this.loadUsers();
+        this.loadManagers();
       },
       error: (err) => {
         this.message = err.error.message;
@@ -204,6 +230,21 @@ export class AdminDashboard implements OnInit, AfterViewInit {
       }
     });
   }
+
+  onAssign(userId: string, managerId: string): void {
+    this.adminService.updateUser(userId, { managerId: managerId }).subscribe({
+      next: (response) => {
+        this.message = response.message;
+        this.loadUsers();
+      },
+      error: (err) => {
+        this.message = err.error.message;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  onEditManager(userId: string): void {}
 
   onFileSelected(event: Event): void {
     this.isLoading = true;
@@ -253,6 +294,7 @@ export class AdminDashboard implements OnInit, AfterViewInit {
               this.message += ` ${response.message}`;
             }
             this.loadUsers();
+            this.loadManagers();
           },
           error: (err) => {
             if (errors.length == 0) {

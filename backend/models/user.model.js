@@ -20,7 +20,9 @@ const userSchema = new Schema(
             type: String,
             required: true,
         },
-        company: String
+        company: String,
+        isManager: { type: Boolean, required: true, default: false },
+        managerId: { type: Schema.Types.ObjectId, ref: "User", default: null }
     },
     {
         timestamps: true
