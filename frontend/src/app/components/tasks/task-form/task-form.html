@@ -1,0 +1,33 @@
+<div>
+    <p>{{ message }}</p>
+    <h2>{{ isEditing ? 'Update Task' : 'Create Task' }}</h2>
+
+    <form [formGroup]="taskForm" (ngSubmit)="onSubmit()">
+      <input type="text" placeholder="Title" formControlName="title"/>
+      <textarea placeholder="Description" formControlName="description"></textarea>
+
+      <label>Start Date</label>
+      <input type="datetime-local" formControlName="startDate"/>
+
+      <label>End Date</label>
+      <input type="datetime-local" formControlName="endDate"/>
+
+      <label>
+        <input type="checkbox" formControlName="enableRecurrence">Recurring task
+      </label>
+      
+      <div *ngIf="taskForm.get('enableRecurrence')?.value">
+        <label>Repeat frequency</label>
+        <select formControlName="repeat">
+          <option value="daily">Daily</option>
+          <option value="weekly">Weekly</option>
+          <option value="monthly">Monthly</option>
+        </select>
+
+        <label>Occurrences</label>
+        <input type="number" formControlName="repeatCount">
+      </div>
+
+      <button type="submit">{{ isEditing ? 'Update' : 'Create' }}</button>
+    </form>
+ </div>
