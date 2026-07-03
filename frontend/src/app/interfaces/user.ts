@@ -17,3 +17,10 @@ export interface UserResponseList {
     message: string;
     data: User[];
 }
+
+export const defaultUser: User = {
+    email: '',
+    username: '',
+    password: '',
+    isManager: false
+};

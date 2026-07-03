@@ -1,5 +1,11 @@
+<app-manager-navbar *ngIf="isManager"></app-manager-navbar>
+
 <h1>Welcome {{ username }}</h1>
 <br>
+
+<p *ngIf="isManager && selectedEmployee.username != ''">
+  Viewing Tasks for {{ selectedEmployee.username }}
+</p>
 
 <div class="container">
   <!-- LEFT SIDE -->

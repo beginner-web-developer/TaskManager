@@ -18,3 +18,11 @@ export interface GetTasksResponse {
     message: string;
     tasks: Task[];
 }
+
+export const defaultTask: Task = {
+    title: '',
+    description: '',
+    startDate: '',
+    endDate: '',
+    isCompleted: false
+};

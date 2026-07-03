@@ -9,3 +9,10 @@ export interface AdminResponse {
     message: string;
     data: Admin;
 }
+
+export const defaultAdmin: Admin = {
+    _id: '',
+    username: '',
+    password: '',
+    company: ''
+};

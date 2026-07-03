@@ -1,0 +1,15 @@
+<mat-toolbar>
+  <button mat-button (click)="clearEmployee()" routerLink="/tasks">My Tasks</button>
+
+  <button mat-button [matMenuTriggerFor]="usersMenu">My Employees</button>
+
+  <mat-menu #usersMenu="matMenu">
+    <button mat-menu-item *ngFor="let employee of employees" 
+      (click)="onClick(employee)"
+      [routerLink]="['/tasks', employee._id]"
+    >
+      <mat-icon *ngIf="selectedEmployee._id == employee._id">check</mat-icon>
+      {{ employee.username }}
+    </button>
+  </mat-menu>
+</mat-toolbar>

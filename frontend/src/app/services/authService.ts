@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { User, UserResponse } from '../interfaces/user';
-import { Admin, AdminResponse } from '../interfaces/admin';
+import { defaultUser, User, UserResponse } from '../interfaces/user';
+import { Admin, AdminResponse, defaultAdmin } from '../interfaces/admin';
 
 @Injectable({
   providedIn: 'root',
@@ -10,19 +10,9 @@ import { Admin, AdminResponse } from '../interfaces/admin';
 export class AuthService {
   private apiUserUrl: string = "http://localhost:4000/api/v1/users";
   private apiAdminUrl: string = "http://localhost:4000/api/v1/admin";
-  public userId = new BehaviorSubject<User>({
-    _id: '',
-    username: '',
-    email: '',
-    password: '',
-    isManager: false
-  });
-  public adminId = new BehaviorSubject<Admin>({
-    _id: '',
-    username: '',
-    password: '',
-    company: ''
-  })
+  public userId = new BehaviorSubject<User>(defaultUser);
+  public adminId = new BehaviorSubject<Admin>(defaultAdmin);
+  
   constructor(private httpClient: HttpClient) {}
 
   register(userData: User): Observable<UserResponse> {

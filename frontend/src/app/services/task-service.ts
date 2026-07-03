@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
-import { GetTasksResponse, Task, TaskResponse } from '../interfaces/task';
-import { User } from '../interfaces/user';
+import { defaultTask, GetTasksResponse, Task, TaskResponse } from '../interfaces/task';
 
 @Injectable({
   providedIn: 'root',
@@ -11,13 +10,7 @@ export class TaskService {
   private apiUrl: string = "http://localhost:4000/api/v1/tasks";
   private refreshSource = new Subject<void>();
   public isEditing = new BehaviorSubject<boolean>(false);
-  public selectedTask = new BehaviorSubject<Task>({
-    title: '',
-    description: '',
-    startDate: '',
-    endDate: '',
-    isCompleted: false
-  });
+  public selectedTask = new BehaviorSubject<Task>(defaultTask);
   public message = new BehaviorSubject<string>('');
 
   constructor(private httpClient: HttpClient) {}

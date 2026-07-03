@@ -9,6 +9,7 @@ export const routes: Routes = [
     { path: "register", component: SignUp, data: { isAdmin: false } },
     { path: "login", component: Login, data: { isAdmin: false } }, 
     { path: "tasks", component: Tasks },
+    { path: "tasks/:employeeId", component: Tasks },
     
     // admin paths
     { path: "admin/register", component: SignUp, data: { isAdmin: true } },

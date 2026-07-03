@@ -28,6 +28,7 @@ import { ActivatedRoute } from '@angular/router';
 export class TaskTable implements OnInit, AfterViewInit {
   taskList: Task[] = [];
   userId?: string;
+  employeeId: string | null = null;
   filterCompleted = new FormControl(true); // true = show completed, false = hide completed
   searchValue: string = '';
 
@@ -53,15 +54,15 @@ export class TaskTable implements OnInit, AfterViewInit {
     };
 
     this.route.paramMap.subscribe(params => {
-      const userId = params.get('employeeId');
-      this.loadTasks(userId);
+      this.employeeId = params.get('employeeId');
+      this.loadTasks(this.employeeId);
     });
   }
 
   ngOnInit(): void {
       this.userId = this.auth.userId.value._id;
       this.service.refresh$.subscribe(() => {
-        this.loadTasks(null);
+        this.loadTasks(this.employeeId);
       });
   }
 
