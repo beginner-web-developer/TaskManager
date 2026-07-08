@@ -7,5 +7,8 @@ Key features:
 * Tasks searching and filtering.
 * Adding recurring tasks.
 
-# Upcoming
-* Task Manager for corporates
+# Task Manager Corporate
+Key features:
+* Admin dashboard: One admin per company to bulk add users and assign roles (manager/employee).
+* Manager can view and add tasks for employees.
+* Email sent to users upon account creation by admin.
