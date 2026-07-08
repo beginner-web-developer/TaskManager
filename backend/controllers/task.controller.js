@@ -4,12 +4,13 @@ import { Task } from "../models/task.model.js";
 const createTask = async (req, res) => {
     try {
         const { title, description, startDate, endDate, 
-            enableRecurrence, repeat, repeatCount } = req.body;
+            enableRecurrence, repeat, repeatCount, addForEmployees, employeeIds } = req.body;
         const { userId } = req.params;
         if (!title || !description || !startDate || !endDate) {
             return res.status(400).json({ message: CREATE_ERROR_MSG })
         }
 
+        const users = addForEmployees ? employeeIds.push(userId) : [userId];
         const toAdd = [];
         if (enableRecurrence) {
             for (let i = 0; i < repeatCount; i++) {
@@ -25,13 +26,17 @@ const createTask = async (req, res) => {
                     currentStart.setMonth(currentStart.getMonth() + i);
                     currentEnd.setMonth(currentEnd.getMonth() + i);
                 }
-                toAdd.push({ userId, title, description, 
-                    startDate: currentStart, 
-                    endDate: currentEnd, 
-                    isCompleted: false });
+                for (let user of users) {
+                    toAdd.push({ userId: user, title, description, 
+                        startDate: currentStart, 
+                        endDate: currentEnd, 
+                        isCompleted: false });
+                }
             }
         } else {
-            toAdd.push({ userId, title, description, startDate, endDate, isCompleted: false });
+            for (let user of users) {
+                toAdd.push({ userId: user, title, description, startDate, endDate, isCompleted: false });
+            }
         }
 
         const conflicts = [];
@@ -39,13 +44,13 @@ const createTask = async (req, res) => {
         for (let i = 0; i < repeatCount; i++) {
             const currTask = toAdd[i]
             const tasks = await Task.find({ 
-                userId, 
+                userId: {$in: users}, 
                 startDate: {$lt: currTask.endDate}, 
                 endDate: {$gt: currTask.startDate},
                 isCompleted: {$ne: true}
             });
             if (tasks.length != 0) {
-                conflicts.push(`Task start: ${currTask.startDate}, Task end: ${currTask.endDate}`);
+                conflicts.push(`Task start: ${currTask.startDate}, Task end: ${currTask.endDate}, User: ${tasks[0].userId}`);
                 const ind = nonConflictingTasks.indexOf(currTask);
                 if (ind > -1) {
                     nonConflictingTasks.splice(ind, 1);

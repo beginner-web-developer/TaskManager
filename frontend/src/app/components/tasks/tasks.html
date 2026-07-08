@@ -12,5 +12,6 @@
   <app-task-table class="task-table"></app-task-table>
   
   <!-- RIGHT SIDE -->
-  <app-task-form class="task-form"></app-task-form>
+  <app-task-form class="task-form" *ngIf="!isCurrentUserPage"></app-task-form>
+  <app-manager-task-form class="task-form" *ngIf="isCurrentUserPage"></app-manager-task-form>
 </div>
